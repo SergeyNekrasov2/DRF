@@ -61,13 +61,14 @@ class Payment(models.Model):
         ("transfer", "Перевод на счет"),
     ]
 
+    objects = None
     user = models.ForeignKey(
         CustomUser,
         on_delete=models.CASCADE,
         related_name="payments",
         verbose_name="Пользователь",
     )
-    payment_date = models.DateField(null=True, blank=True, verbose_name="Дата оплаты")
+    payment_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата оплаты")
     paid_course = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
@@ -84,31 +85,15 @@ class Payment(models.Model):
         null=True,
         blank=True,
     )
-    payment_amount = models.PositiveIntegerField(
-        default=0, verbose_name="Сумма оплаты", null=True, blank=True
-    )
+    payment_amount = models.PositiveIntegerField(verbose_name="Сумма оплаты")
+
     payment_method = models.CharField(
         max_length=10,
         choices=PAYMENT_METHODS,
         default="cash",
         verbose_name="Вариант оплаты",
-        null=True,
-        blank=True,
     )
-    session_id = models.CharField(
-        max_length=255,
-        verbose_name="Id сессии",
-        help_text="Введите Id сессии",
-        null=True,
-        blank=True,
-    )
-    link = models.URLField(
-        max_length=400,
-        verbose_name="Ссылка на оплату товара",
-        help_text="Введите на оплату товара",
-        null=True,
-        blank=True,
-    )
+
 
     def __str__(self):
         return f"{self.user.email} - {self.paid_course or self.separately_paid_lesson} ({self.payment_amount} руб.)"

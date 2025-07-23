@@ -7,4 +7,5 @@ sqlparse==0.5.3
 tzdata==2024.2
 asgiref==3.8.1
 dotenv==0.9.9
-rest_framework_simplejwt
+rest-framework-simplejwt==0.0.2
+django-filter==25.1
