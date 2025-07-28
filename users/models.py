@@ -1,39 +1,103 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from study.models import Course, Lesson
 
-
-class User(AbstractUser):
-
-    username = None
-    email = models.EmailField(unique=True, verbose_name="Email")
-    phone = models.CharField(
-        max_length=15,
-        verbose_name="Телефон",
-        blank=True,
-        null=True,
-        help_text="Введите номер телефона",
+class CustomUser(AbstractUser):
+    email = models.EmailField(
+        unique=True,
+        verbose_name="Электронная почта",
+        help_text="Введите вашу электронную почту. Используется для входа в систему.",
     )
-    country = models.CharField(
-        max_length=25,
-        verbose_name="Страна",
+    phone_number = models.CharField(
+        max_length=15,
         blank=True,
         null=True,
-        help_text="Из какой вы страны",
+        verbose_name="Номер телефона",
+        help_text="Укажите ваш контактный номер телефона (необязательно).",
+    )
+    city = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="Город",
+        help_text="Введите название города проживания (необязательно).",
     )
     avatar = models.ImageField(
-        upload_to="users/avatars/",
-        verbose_name="Аватар",
+        upload_to="avatars/",
         blank=True,
         null=True,
-        help_text="Загрузити свой аватар",
+        verbose_name="Аватар",
+        help_text="Загрузите изображение для профиля (необязательно).",
+    )
+
+    groups = models.ManyToManyField(
+        "auth.Group",
+        related_name="customuser_set",
+        blank=True,
+        help_text="Группы, к которым принадлежит этот пользователь. Пользователь получит все разрешения, предоставленные каждой из своих групп.",
+        verbose_name="Группы",
+    )
+
+    user_permissions = models.ManyToManyField(
+        "auth.Permission",
+        related_name="customuser_set",
+        blank=True,
+        help_text="Специфические разрешения для этого пользователя.",
+        verbose_name="Разрешения пользователя",
     )
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
-
-    class Meta:
-        verbose_name = "Пользователь"
-        verbose_name_plural = "Пользователи"
+    REQUIRED_FIELDS = [
+        "username",
+    ]
 
     def __str__(self):
         return self.email
+
+
+class Payment(models.Model):
+    PAYMENT_METHODS = [
+        ("cash", "Наличные"),
+        ("transfer", "Перевод на счет"),
+    ]
+
+    objects = None
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="payments",
+        verbose_name="Пользователь",
+    )
+    payment_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата оплаты")
+    paid_course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="payments",
+        verbose_name="Оплаченный курс",
+        null=True,
+        blank=True,
+    )
+    separately_paid_lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        related_name="payments",
+        verbose_name="Оплаченный урок",
+        null=True,
+        blank=True,
+    )
+    payment_amount = models.PositiveIntegerField(verbose_name="Сумма оплаты")
+
+    payment_method = models.CharField(
+        max_length=10,
+        choices=PAYMENT_METHODS,
+        default="cash",
+        verbose_name="Вариант оплаты",
+    )
+
+
+    def __str__(self):
+        return f"{self.user.email} - {self.paid_course or self.separately_paid_lesson} ({self.payment_amount} руб.)"
+
+    class Meta:
+        verbose_name = "Pay"
+        verbose_name_plural = "Pays"
