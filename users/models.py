@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from study.models import Course, Lesson
 
+
 class CustomUser(AbstractUser):
     email = models.EmailField(
         unique=True,
@@ -93,7 +94,6 @@ class Payment(models.Model):
         default="cash",
         verbose_name="Вариант оплаты",
     )
-
 
     def __str__(self):
         return f"{self.user.email} - {self.paid_course or self.separately_paid_lesson} ({self.payment_amount} руб.)"

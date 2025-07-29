@@ -33,5 +33,3 @@ class CourseDetailSerializers(serializers.ModelSerializer):
             "course_count_lessons",
             "lessons",
         )
-
-
