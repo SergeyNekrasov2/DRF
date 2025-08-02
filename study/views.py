@@ -1,5 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, viewsets
+from rest_framework.permissions import IsAuthenticated
+
 from study.models import Course, Lesson
 from study.serializers import (CourseDetailSerializers,
                                CourseSerializers,
@@ -16,6 +18,10 @@ class CourseViewSet(viewsets.ModelViewSet):
             return CourseDetailSerializers
         return CourseSerializers
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+
+
     def get_permissions(self):
         if self.action == "create":
             self.permission_classes = (~IsModerDRF,)
@@ -28,6 +34,10 @@ class CourseViewSet(viewsets.ModelViewSet):
 
 class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializers
+    permission_classes = (~IsModerDRF, IsAuthenticated)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 class LessonListAPIView(generics.ListAPIView):
@@ -38,12 +48,15 @@ class LessonListAPIView(generics.ListAPIView):
 class LessonRetrieveAPIView(generics.RetrieveAPIView):
     serializer_class = LessonSerializers
     queryset = Lesson.objects.all()
+    permission_classes = (IsModerDRF | IsOwnerDRF, IsAuthenticated)
 
 
 class LessonUpdateAPIView(generics.UpdateAPIView):
     serializer_class = LessonSerializers
     queryset = Lesson.objects.all()
+    permission_classes = (IsModerDRF | IsOwnerDRF, IsAuthenticated)
 
 
 class LessonDestroyAPIView(generics.DestroyAPIView):
     queryset = Lesson.objects.all()
+    permission_classes = (~IsModerDRF | IsOwnerDRF, IsAuthenticated)
