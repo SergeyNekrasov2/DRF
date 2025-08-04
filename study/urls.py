@@ -1,10 +1,14 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
-from study.views import (CourseViewSet, LessonCreateAPIView,
-                         LessonDestroyAPIView, LessonListAPIView,
-                         LessonRetrieveAPIView, LessonUpdateAPIView,
-                         )
+from study.views import (
+    CourseViewSet,
+    LessonCreateAPIView,
+    LessonDestroyAPIView,
+    LessonListAPIView,
+    LessonRetrieveAPIView,
+    LessonUpdateAPIView,
+)
 
 app_name = "study"
 

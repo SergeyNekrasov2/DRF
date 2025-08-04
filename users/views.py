@@ -1,10 +1,10 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, viewsets
-from rest_framework.generics import (DestroyAPIView, RetrieveAPIView,
-                                     UpdateAPIView)
+from rest_framework.generics import DestroyAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from users.models import CustomUser, Payment
+from users.permissions import IsOwnerDRF
 from users.serializers import PaymentSerializers, CustomUserSerializer
 
 
@@ -41,7 +41,7 @@ class UserRetrieveAPIView(RetrieveAPIView):
 class UserUpdateAPIView(UpdateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerDRF]
 
 
 class UserDestroyAPIView(DestroyAPIView):
