@@ -8,6 +8,7 @@ from study.views import (
     LessonListAPIView,
     LessonRetrieveAPIView,
     LessonUpdateAPIView,
+    SubscriptionCreateAPIView,
 )
 
 app_name = "study"
@@ -24,5 +25,10 @@ urlpatterns = [
     ),
     path(
         "lesson/delete/<int:pk>/", LessonDestroyAPIView.as_view(), name="lesson_delete"
+    ),
+path(
+        "course/subscription/",
+        SubscriptionCreateAPIView.as_view(),
+        name="course_subscription",
     ),
 ] + router.urls
