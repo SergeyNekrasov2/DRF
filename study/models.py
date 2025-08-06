@@ -92,6 +92,10 @@ class Subscription(models.Model):
         on_delete=models.CASCADE,
         verbose_name="Курс",
     )
+    sign_of_subscription = models.BooleanField(
+        default=False,
+        verbose_name="Характер подписки",
+    )
 
     def __str__(self):
         return f"{self.user} {self.course}"
