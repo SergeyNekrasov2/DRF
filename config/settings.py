@@ -1,16 +1,18 @@
 import os
 from datetime import timedelta
 from pathlib import Path
-
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
+
+DEBUG = True if os.getenv("DEBUG") == "True" else False
 
 ALLOWED_HOSTS = []
 
@@ -27,6 +29,7 @@ INSTALLED_APPS = [
     "users",
     "django_filters",
     "rest_framework_simplejwt",
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
