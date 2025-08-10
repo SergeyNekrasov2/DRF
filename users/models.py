@@ -94,6 +94,20 @@ class Payment(models.Model):
         default="cash",
         verbose_name="Вариант оплаты",
     )
+    session_id = models.CharField(
+        max_length=255,
+        verbose_name='Id сессии',
+        help_text='Введите Id сессии',
+        null=True,
+        blank=True,
+    )
+    link = models.URLField(
+        max_length=400,
+        verbose_name='Ссылка на оплату товара',
+        help_text='Введите на оплату товара',
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         return f"{self.user.email} - {self.paid_course or self.separately_paid_lesson} ({self.payment_amount} руб.)"
