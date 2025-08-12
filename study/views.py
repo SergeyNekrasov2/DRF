@@ -9,6 +9,7 @@ from study.serializers import (CourseDetailSerializers,
                                LessonSerializers,
                                SubscriptionSerializer)
 from users.permissions import IsModerDRF, IsOwnerDRF
+from study.tasks import course_update
 
 class CourseViewSet(viewsets.ModelViewSet):
     serializer_class = CourseSerializers
@@ -31,6 +32,11 @@ class CourseViewSet(viewsets.ModelViewSet):
         elif self.action == "destroy":
             self.permission_classes = (~IsModerDRF | IsOwnerDRF,)
         return super().get_permissions()
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        course_update.delay(instance.pk)
+        return instance
 
 class LessonCreateAPIView(generics.CreateAPIView):
     serializer_class = LessonSerializers
