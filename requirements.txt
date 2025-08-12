@@ -10,7 +10,8 @@ dotenv==0.9.9
 rest-framework-simplejwt==0.0.2
 django-filter==25.1
 djangorestframework_simplejwt==5.5.0
-
+django-redis==6.0.0
+django-celery-beat==2.8.1
 celery~=5.5.3
 stripe~=12.4.0
 drf-yasg~=1.21.10
