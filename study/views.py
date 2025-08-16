@@ -87,5 +87,5 @@ class SubscriptionCreateAPIView(generics.CreateAPIView):
             Subscription.objects.create(
                 user=user, course=course_item, sign_of_subscription=True
             )
-            message = "Ваша подписка удалена!"
+            message = "Ваша подписка оформлена!"
         return Response({"message": message})
