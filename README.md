@@ -35,3 +35,6 @@ python manage.py runserver
 ```bash
 docker-compose up --build
 ```
+## Поддержка
+
+При возникновении проблем создайте issue в репозитории проекта. 
