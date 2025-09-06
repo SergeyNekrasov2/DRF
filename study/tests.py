@@ -21,7 +21,7 @@ class TrainingTestCase(APITestCase):
         self.client.force_authenticate(user=self.member)
 
     def test_training_retrieve(self):
-        url = reverse("materials:course-detail", args=(self.training.pk,))
+        url = reverse("study:course-detail", args=(self.training.pk,))
         response = self.client.get(url)
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -31,7 +31,7 @@ class TrainingTestCase(APITestCase):
         self.assertEqual(Course.objects.all().count(), 1)
 
     def test_training_update(self):
-        url = reverse("materials:course-detail", args=(self.training.pk,))
+        url = reverse("study:course-detail", args=(self.training.pk,))
         data = {"title": "Advanced Mathematics"}
         response = self.client.patch(url, data)
         data = response.json()
@@ -39,14 +39,14 @@ class TrainingTestCase(APITestCase):
         self.assertEqual(data.get("title"), "Advanced Mathematics")
 
     def test_training_delete(self):
-        url = reverse("materials:course-detail", args=(self.training.pk,))
+        url = reverse("study:course-detail", args=(self.training.pk,))
 
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Course.objects.all().count(), 0)
 
     def test_training_list(self):
-        url = reverse("materials:course-list")
+        url = reverse("study:course-list")
         response = self.client.get(url)
         data = response.json()
         expected_result = {
@@ -94,7 +94,7 @@ class SessionTestCase(APITestCase):
         self.client.force_authenticate(user=self.member)
 
     def test_session_retrieve(self):
-        url = reverse("materials:lesson_detail", args=(self.session.pk,))
+        url = reverse("study:lesson_detail", args=(self.session.pk,))
         response = self.client.get(url)
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -104,7 +104,7 @@ class SessionTestCase(APITestCase):
         self.assertEqual(Lesson.objects.all().count(), 1)
 
     def test_session_update(self):
-        url = reverse("materials:lesson_update", args=(self.session.pk,))
+        url = reverse("study:lesson_update", args=(self.session.pk,))
         data = {"title": "Advanced Algebra"}
         response = self.client.patch(url, data)
         data = response.json()
@@ -112,13 +112,13 @@ class SessionTestCase(APITestCase):
         self.assertEqual(data.get("title"), "Advanced Algebra")
 
     def test_session_delete(self):
-        url = reverse("materials:lesson_delete", args=(self.session.pk,))
+        url = reverse("study:lesson_delete", args=(self.session.pk,))
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Lesson.objects.all().count(), 0)
 
     def test_session_list(self):
-        url = reverse("materials:lesson_list")
+        url = reverse("study:lesson_list")
         response = self.client.get(url)
         data = response.json()
         expected_result = {
@@ -156,7 +156,7 @@ class EnrollmentTestCase(APITestCase):
         self.client.force_authenticate(user=self.member)
 
     def test_enrollment_create(self):
-        url = reverse("materials:course_subscription")
+        url = reverse("study:course_subscription")
         data = {"user": self.member, "course": self.training.pk}
         response = self.client.post(url, data)
         data = response.json()
@@ -167,7 +167,7 @@ class EnrollmentTestCase(APITestCase):
         self.enrollment = Subscription.objects.create(
             user=self.member, course=self.training
         )
-        url = reverse("materials:course_subscription")
+        url = reverse("study:course_subscription")
         data = {"user": self.member, "course": self.training.pk}
         response = self.client.post(url, data)
         data = response.json()
