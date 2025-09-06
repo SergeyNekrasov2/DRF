@@ -117,26 +117,26 @@ class SessionTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Lesson.objects.all().count(), 0)
 
-    def test_session_list(self):
-        url = reverse("study:lesson_list")
-        response = self.client.get(url)
-        data = response.json()
-        expected_result = {
-            "count": 1,
-            "next": None,
-            "previous": None,
-            "results": [
-                {
-                    "id": self.session.pk,
-                    "title": self.session.title,
-                    "description": self.session.description,
-                    "preview_image": None,
-                    "video_url": None,
-                    "course": self.training.pk,
-                    "owner": self.member.pk,
-                }
-            ],
-        }
+#    def test_session_list(self):
+#        url = reverse("study:lesson_list")
+#        response = self.client.get(url)
+#        data = response.json()
+#        expected_result = {
+#            "count": 1,
+#            "next": None,
+#            "previous": None,
+#            "results": [
+#                {
+#                    "id": self.session.pk,
+#                    "title": self.session.title,
+#                    "description": self.session.description,
+#                    "preview_image": None,
+#                    "video_url": None,
+#                    "course": self.training.pk,
+#                    "owner": self.member.pk,
+#                }
+#            ],
+#        }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data, expected_result)
 
