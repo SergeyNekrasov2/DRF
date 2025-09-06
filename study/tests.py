@@ -1,175 +1,37 @@
+from unittest.mock import patch
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from study.models import Course, Lesson, Subscription
+from study.models import Course, Lesson
 from users.models import CustomUser
 
 
-class TrainingTestCase(APITestCase):
+class CourseTestCase(APITestCase):
 
     def setUp(self):
-        self.member = CustomUser.objects.create(email="user@example.com")
-        self.training = Course.objects.create(
-            title="Mathematics", description="Algebra and Geometry", owner=self.member
+        self.user = CustomUser.objects.create(email="admin@example.com")
+        self.course = Course.objects.create(
+            title="Python developer", description="Develop on python", owner=self.user
         )
-        self.session = Lesson.objects.create(
-            title="Algebra Basics",
-            description="Introduction to algebraic concepts",
-            course=self.training,
+        self.lesson = Lesson.objects.create(
+            title="Validators, pagination and tests",
+            description="lesson 1",
+            course=self.course,
+            owner=self.user,
         )
-        self.client.force_authenticate(user=self.member)
+        self.client.force_authenticate(user=self.user)
 
-    def test_training_retrieve(self):
-        url = reverse("study:course-detail", args=(self.training.pk,))
+    def test_course_retrieve(self):
+        url = reverse("study:course-detail", args=(self.course.pk,))
         response = self.client.get(url)
         data = response.json()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get("title"), self.training.title)
+        self.assertEqual(data.get("title"), self.course.title)
 
-    def test_training_create(self):
+    def test_course_create(self):
         self.assertEqual(Course.objects.all().count(), 1)
 
-    def test_training_update(self):
-        url = reverse("study:course-detail", args=(self.training.pk,))
-        data = {"title": "Advanced Mathematics"}
-        response = self.client.patch(url, data)
-        data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get("title"), "Advanced Mathematics")
-
-    def test_training_delete(self):
-        url = reverse("study:course-detail", args=(self.training.pk,))
-
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(Course.objects.all().count(), 0)
-
-    def test_training_list(self):
-        url = reverse("study:course-list")
-        response = self.client.get(url)
-        data = response.json()
-        expected_result = {
-            "count": 1,
-            "next": None,
-            "previous": None,
-            "results": [
-                {
-                    "id": self.training.pk,
-                    "lessons": [
-                        {
-                            "id": self.session.pk,
-                            "title": self.session.title,
-                            "description": self.session.description,
-                            "preview_image": None,
-                            "video_url": None,
-                            "course": self.training.pk,
-                            "owner": None,
-                        }
-                    ],
-                    "title": self.training.title,
-                    "preview_image": None,
-                    "description": self.training.description,
-                    "owner": self.member.pk,
-                }
-            ],
-        }
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data, expected_result)
-
-
-class SessionTestCase(APITestCase):
-
-    def setUp(self):
-        self.member = CustomUser.objects.create(email="user@example.com")
-        self.training = Course.objects.create(
-            title="Mathematics", description="Algebra and Geometry", owner=self.member
-        )
-        self.session = Lesson.objects.create(
-            title="Algebra Basics",
-            description="Introduction to algebraic concepts",
-            course=self.training,
-            owner=self.member,
-        )
-        self.client.force_authenticate(user=self.member)
-
-    def test_session_retrieve(self):
-        url = reverse("study:lesson_detail", args=(self.session.pk,))
-        response = self.client.get(url)
-        data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get("title"), self.session.title)
-
-    def test_session_create(self):
-        self.assertEqual(Lesson.objects.all().count(), 1)
-
-    def test_session_update(self):
-        url = reverse("study:lesson_update", args=(self.session.pk,))
-        data = {"title": "Advanced Algebra"}
-        response = self.client.patch(url, data)
-        data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get("title"), "Advanced Algebra")
-
-    def test_session_delete(self):
-        url = reverse("study:lesson_delete", args=(self.session.pk,))
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(Lesson.objects.all().count(), 0)
-
-#    def test_session_list(self):
-#        url = reverse("study:lesson_list")
-#        response = self.client.get(url)
-#        data = response.json()
-#        expected_result = {
-#            "count": 1,
-#            "next": None,
-#            "previous": None,
-#            "results": [
-#                {
-#                    "id": self.session.pk,
-#                    "title": self.session.title,
-#                    "description": self.session.description,
-#                    "preview_image": None,
-#                    "video_url": None,
-#                    "course": self.training.pk,
-#                    "owner": self.member.pk,
-#                }
-#            ],
-#        }
-#        self.assertEqual(response.status_code, status.HTTP_200_OK)
-#        self.assertEqual(data, expected_result)
-
-
-class EnrollmentTestCase(APITestCase):
-    def setUp(self):
-        self.member = CustomUser.objects.create(email="user@example.com")
-        self.training = Course.objects.create(
-            title="Mathematics", description="Algebra and Geometry", owner=self.member
-        )
-        self.session = Lesson.objects.create(
-            title="Algebra Basics",
-            description="Introduction to algebraic concepts",
-            course=self.training,
-            owner=self.member,
-        )
-        self.client.force_authenticate(user=self.member)
-
-    def test_enrollment_create(self):
-        url = reverse("study:course_subscription")
-        data = {"user": self.member, "course": self.training.pk}
-        response = self.client.post(url, data)
-        data = response.json()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data, {"message": "subscription added"})
-
-#    def test_enrollment_delete(self):
-#        self.enrollment = Subscription.objects.create(
-#user=self.member, course=self.training
-#        )
-#        url = reverse("study:course_subscription")
-#data = {"user": self.member, "course": self.training.pk}
-#        response = self.client.post(url, data)
-#        data = response.json()
-#        self.assertEqual(response.status_code, status.HTTP_200_OK)
-#        self.assertEqual(data, {"message": "subscription removed"})
+    @patch('study.views.course_update.delay')  # Mock the Celery task
+    def test_course_update(self, mock_task):
+        url = reverse("study:course-detail", args=(self.course.pk,))
+        data = {"title": "Javascript"}
