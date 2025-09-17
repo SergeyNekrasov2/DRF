@@ -73,8 +73,8 @@ jobs:
       - name: Deploy to Server
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/study:${{ github.sha }}
-            docker stop study || true
-            docker rm study || true
-            docker run -d --name study -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/study:${{ github.sha }}
+            sudo docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/study:${{ github.sha }}
+            sudo docker stop study || true
+            sudo docker rm study || true
+            sudo docker run -d --name study -p 80:8000 ${{ secrets.DOCKER_HUB_USERNAME }}/study:${{ github.sha }}
           EOF
