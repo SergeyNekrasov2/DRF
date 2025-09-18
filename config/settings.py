@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 from dotenv import load_dotenv
@@ -8,8 +9,8 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-
+#SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY="kt00^m9k%tlqi53b_q5jwljcl)8z7bzifq-a551+v0sq)-%f"
 STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
 
 DEBUG = True if os.getenv("DEBUG") == "True" else False
@@ -62,7 +63,15 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 
-DATABASES = {
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'test_db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": os.getenv("DATABASE_NAME"),
